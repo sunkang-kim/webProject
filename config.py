@@ -9,3 +9,5 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///{}'.format(os.path.join(BASE_DIR,'pybo.db')
 
 # SQLAlchemy의 이벤트를 처리하는 옵션 - 해당 옵션은 현 프로젝트에 사용되지 않아 False로 설정.
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+SECRET_KEY = "dev"
