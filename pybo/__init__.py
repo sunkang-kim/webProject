@@ -20,9 +20,14 @@ def create_app():
 
     # bp 객체 등록 - 블루프린트
     # .views 폴더 안에 각 페이지 view를 담당하는 .py를 블루프린트 객체로 등록
-    from .views import main_views, question_views, answer_views   
+    from .views import main_views, question_views, answer_views, auth_views   
     app.register_blueprint(main_views.bp)
     app.register_blueprint(question_views.bp)
     app.register_blueprint(answer_views.bp)
+    app.register_blueprint(auth_views.bp)
+
+    # 필터
+    from .filter import format_datetime
+    app.jinja_env.filters['datetime'] = format_datetime
 
     return app
