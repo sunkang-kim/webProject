@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Blueprint, render_template, request, url_for, g
+from flask import Blueprint, render_template, request, url_for, g, flash
 from werkzeug.utils import redirect
 
 from .. import db
@@ -36,3 +36,46 @@ def create():
         db.session.commit()
         return redirect(url_for('main.index'))
     return render_template('question/question_form.html', form=form)
+
+# 질문 게시글 수정 뷰
+@bp.route('/modify/<int:question_id>', methods=('GET', 'POST'))
+@login_required
+def modify(question_id):
+    question = Question.query.get_or_404(question_id)
+    if g.user != question.user:
+        flash('수정권한이 없습니다')
+        return redirect(url_for('question.detail', question_id=question_id))
+    if request.method == 'POST':  # POST 요청
+        form = QuestionForm()
+        if form.validate_on_submit():
+            form.populate_obj(question)
+            question.modify_date = datetime.now()  # 수정일시 저장
+            db.session.commit()
+            return redirect(url_for('question.detail', question_id=question_id))
+    else:  # GET 요청
+        form = QuestionForm(obj=question)
+    return render_template('question/question_form.html', form=form)
+
+# 질문 게시글 삭제 뷰
+@bp.route('/delete/<int:question_id>')
+@login_required
+def delete(question_id):
+    question = Question.query.get_or_404(question_id)
+    if g.user != question.user:
+        flash('삭제권한이 없습니다')
+        return redirect(url_for('question.detail', question_id=question_id))
+    db.session.delete(question)
+    db.session.commit()
+    return redirect(url_for('question._list'))
+
+# 질문 추천 뷰
+@bp.route('/vote/<int:question_id>/')
+@login_required
+def vote(question_id):
+    _question = Question.query.get_or_404(question_id)
+    if g.user == _question.user:
+        flash('본인이 작성한 글은 추천할수 없습니다')
+    else:
+        _question.voter.append(g.user)
+        db.session.commit()
+    return redirect(url_for('question.detail', question_id=question_id))
