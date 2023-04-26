@@ -3,7 +3,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 
-import config
+# import config
 
 naming_convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -19,7 +19,8 @@ migrate = Migrate()
 def create_app():
     # 플라스크 애플리케이션을 생성하는 코드
     app = Flask(__name__)
-    app.config.from_object(config)
+    # app.config.from_object(config)
+    app.config.from_envvar('APP_CONFIG_FILE')
 
     # ORM(object relational mapping) - 파이썬 문법만으로 데이터베이스를 다룰수있음.
     db.init_app(app)
